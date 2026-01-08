@@ -11,7 +11,7 @@ interface Settlement {
   amount: number;
 }
 
-export default function SettlementView({ groupId, currency }: { groupId: string, currency: string }) {
+export default function SettlementView({ groupId, currency, currentUserId }: { groupId: string; currency: string; currentUserId: string }) {
   const router = useRouter();
   const [settlements, setSettlements] = useState<Settlement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,6 @@ export default function SettlementView({ groupId, currency }: { groupId: string,
   }, [groupId]);
 
   const handleSettle = async (settlement: Settlement) => {
-
     if (!confirm(`Record payment of ${settlement.amount} ${currency} from ${settlement.fromName} to ${settlement.toName}?`)) return;
 
     setProcessing(true);
@@ -49,13 +48,13 @@ export default function SettlementView({ groupId, currency }: { groupId: string,
           fromId: settlement.fromId,
           toId: settlement.toId,
           amount: settlement.amount.toString(),
-          note: "Settlement"
+          note: "Settlement",
         }),
       });
 
       if (res.ok) {
         // Optimistically update
-        setSettlements(prev => prev.filter(s => s !== settlement));
+        setSettlements((prev) => prev.filter((s) => s !== settlement));
         router.refresh();
       } else {
         alert("Failed to record payment");
@@ -67,12 +66,14 @@ export default function SettlementView({ groupId, currency }: { groupId: string,
     }
   };
 
+  const mySettlements = settlements.filter((s) => s.fromId === currentUserId);
+
   if (loading) return <div className="text-center py-8">Loading suggested transfers...</div>;
 
-  if (settlements.length === 0) {
+  if (mySettlements.length === 0) {
     return (
       <div className="text-center py-12 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
-        <p className="text-zinc-500">No settlements needed. Everyone is all square!</p>
+        <p className="text-zinc-500">You don&apos;t have any pending settlements.</p>
       </div>
     );
   }
@@ -80,7 +81,7 @@ export default function SettlementView({ groupId, currency }: { groupId: string,
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Suggested Transfers</h3>
-      {settlements.map((s, idx) => (
+      {mySettlements.map((s, idx) => (
         <div key={idx} className="flex flex-col sm:flex-row items-center justify-between p-4 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm gap-4">
           <div className="flex items-center gap-3">
             <div className="flex flex-col">
@@ -97,14 +98,8 @@ export default function SettlementView({ groupId, currency }: { groupId: string,
           </div>
 
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-            <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-              {new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(s.amount)}
-            </span>
-            <button
-              onClick={() => handleSettle(s)}
-              disabled={processing}
-              className="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
-            >
+            <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(s.amount)}</span>
+            <button onClick={() => handleSettle(s)} disabled={processing} className="px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50">
               Mark Paid
             </button>
           </div>
