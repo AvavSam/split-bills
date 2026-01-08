@@ -1,0 +1,151 @@
+generator client {
+  provider        = "prisma-client" // or `prisma-client-js`
+  output          = "../generated/prisma"
+  engineType      = "client" // enable Prisma ORM without Rust
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+// ========== Core Models ==========
+
+model User {
+  id           String       @id @default(cuid())
+  name         String?
+  email        String       @unique
+  passwordHash String
+  image        String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relations
+  memberships  Membership[]
+  expensesPaid Expense[]    @relation("payer")
+  expenseShares ExpenseShare[]
+  paymentsFrom Payment[]    @relation("from")
+  paymentsTo   Payment[]    @relation("to")
+  sessions     Session[]
+  activityLogs ActivityLog[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model Group {
+  id        String       @id @default(cuid())
+  name      String
+  currency  String       @default("IDR")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  // Relations
+  memberships Membership[]
+  expenses    Expense[]
+  payments    Payment[]
+  activityLogs ActivityLog[]
+}
+
+model Membership {
+  id         String   @id @default(cuid())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     String
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId    String
+  role       String   @default("member") // "member" | "admin"
+  joinedAt   DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Precomputed net balance for performance (updated transactionally)
+  netBalance Decimal  @db.Decimal(12, 2) @default(0)
+
+  @@unique([userId, groupId])
+  @@index([userId])
+  @@index([groupId])
+}
+
+model Expense {
+  id          String         @id @default(cuid())
+  group       Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId     String
+  title       String
+  totalAmount Decimal        @db.Decimal(12, 2)
+  currency    String         @default("IDR")
+  payer       User           @relation("payer", fields: [payerId], references: [id], onDelete: Cascade)
+  payerId     String
+  date        DateTime       @default(now())
+  notes       String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  items       ExpenseItem[]
+  shares      ExpenseShare[]
+
+  @@index([groupId])
+  @@index([payerId])
+}
+
+model ExpenseItem {
+  id        String  @id @default(cuid())
+  expense   Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  expenseId String
+  name      String
+  price     Decimal @db.Decimal(12, 2)
+  quantity  Int     @default(1)
+
+  @@index([expenseId])
+}
+
+model ExpenseShare {
+  id          String  @id @default(cuid())
+  expense     Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  expenseId   String
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  shareAmount Decimal @db.Decimal(12, 2)
+
+  @@unique([expenseId, userId])
+  @@index([expenseId])
+  @@index([userId])
+}
+
+model Payment {
+  id        String   @id @default(cuid())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+  from      User     @relation("from", fields: [fromId], references: [id], onDelete: Cascade)
+  fromId    String
+  to        User     @relation("to", fields: [toId], references: [id], onDelete: Cascade)
+  toId      String
+  amount    Decimal  @db.Decimal(12, 2)
+  date      DateTime @default(now())
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([groupId])
+  @@index([fromId])
+  @@index([toId])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  group     Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  groupId   String?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  actorId   String?
+  type      String   // "expense.created" | "payment.created" | "member.added" | etc.
+  payload   Json     // store context-specific data
+  createdAt DateTime @default(now())
+
+  @@index([groupId])
+  @@index([actorId])
+}
