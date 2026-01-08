@@ -110,8 +110,8 @@ export async function computeGroupBalances(
     const fromBalance = balances.get(payment.fromId) ?? new Decimal(0);
     const toBalance = balances.get(payment.toId) ?? new Decimal(0);
 
-    balances.set(payment.fromId, fromBalance.minus(amount));
-    balances.set(payment.toId, toBalance.plus(amount));
+    balances.set(payment.fromId, fromBalance.plus(amount));
+    balances.set(payment.toId, toBalance.minus(amount));
   }
 
   return balances;
