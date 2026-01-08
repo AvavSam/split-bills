@@ -1170,6 +1170,7 @@ export const ExpenseScalarFieldEnum = {
   groupId: 'groupId',
   title: 'title',
   totalAmount: 'totalAmount',
+  taxAmount: 'taxAmount',
   currency: 'currency',
   payerId: 'payerId',
   date: 'date',

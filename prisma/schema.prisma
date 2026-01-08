@@ -78,6 +78,7 @@ model Expense {
   groupId     String
   title       String
   totalAmount Decimal        @db.Decimal(12, 2)
+  taxAmount   Decimal?       @db.Decimal(12, 2)
   currency    String         @default("IDR")
   payer       User           @relation("payer", fields: [payerId], references: [id], onDelete: Cascade)
   payerId     String

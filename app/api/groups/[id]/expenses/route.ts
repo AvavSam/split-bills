@@ -4,17 +4,14 @@ import { CreateExpenseSchema, parseAmount } from '@/lib/validation';
 import { prisma } from '@/lib/prisma';
 import Decimal from 'decimal.js';
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     const membership = await prisma.membership.findUnique({
       where: {
@@ -23,7 +20,7 @@ export async function GET(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const expenses = await prisma.expense.findMany({
@@ -35,30 +32,24 @@ export async function GET(
         },
         items: true,
       },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
     });
 
     return NextResponse.json(expenses);
   } catch (error) {
-    console.error('Get expenses error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch expenses' },
-      { status: 500 }
-    );
+    console.error("Get expenses error:", error);
+    return NextResponse.json({ error: "Failed to fetch expenses" }, { status: 500 });
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     const membership = await prisma.membership.findUnique({
       where: {
@@ -67,13 +58,14 @@ export async function POST(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
     const validated = CreateExpenseSchema.parse(body);
 
     const totalAmount = parseAmount(validated.totalAmount);
+    const taxAmount = validated.taxAmount ? parseAmount(validated.taxAmount) : null;
 
     const expense = await prisma.$transaction(async (tx) => {
       // Create expense
@@ -82,6 +74,7 @@ export async function POST(
           groupId,
           title: validated.title,
           totalAmount,
+          taxAmount,
           currency: validated.currency,
           payerId: validated.payerId,
           date: validated.date ? new Date(validated.date) : new Date(),
@@ -108,7 +101,7 @@ export async function POST(
 
       // Validate shares sum to total
       if (!shareTotal.equals(totalAmount)) {
-        throw new Error('Expense shares do not equal total amount');
+        throw new Error("Expense shares do not equal total amount");
       }
 
       await tx.expenseShare.createMany({
@@ -120,10 +113,7 @@ export async function POST(
       });
 
       // Update netBalance for payer and all participants
-      const allUserIds = [
-        validated.payerId,
-        ...validated.participants.map((p) => p.userId),
-      ];
+      const allUserIds = [validated.payerId, ...validated.participants.map((p) => p.userId)];
 
       for (const userId of allUserIds) {
         const currentMembership = await tx.membership.findUnique({
@@ -139,20 +129,14 @@ export async function POST(
           const userShares = await tx.expenseShare.findMany({
             where: {
               userId,
-              expense: { groupId }
+              expense: { groupId },
             },
             include: { expense: true },
           });
 
-          const paid = userExpenses.reduce(
-            (sum, exp) => sum.plus(new Decimal(exp.totalAmount.toString())),
-            new Decimal(0)
-          );
+          const paid = userExpenses.reduce((sum, exp) => sum.plus(new Decimal(exp.totalAmount.toString())), new Decimal(0));
 
-          const owed = userShares.reduce(
-            (sum, share) => sum.plus(new Decimal(share.shareAmount.toString())),
-            new Decimal(0)
-          );
+          const owed = userShares.reduce((sum, share) => sum.plus(new Decimal(share.shareAmount.toString())), new Decimal(0));
 
           const netBalance = paid.minus(owed);
 
@@ -168,10 +152,7 @@ export async function POST(
 
     return NextResponse.json(expense, { status: 201 });
   } catch (error) {
-    console.error('Create expense error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create expense' },
-      { status: 500 }
-    );
+    console.error("Create expense error:", error);
+    return NextResponse.json({ error: "Failed to create expense" }, { status: 500 });
   }
 }

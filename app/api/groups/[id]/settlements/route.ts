@@ -8,17 +8,14 @@ import {
 } from '@/lib/settlement';
 import Decimal from 'decimal.js';
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     const membership = await prisma.membership.findUnique({
       where: {
@@ -27,7 +24,7 @@ export async function GET(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Get all members
@@ -49,39 +46,29 @@ export async function GET(
     // Calculate settlements
     const settlements = calculateSettlements(userBalances);
 
-    return NextResponse.json({
-      settlements: settlements.map((s) => ({
-        from: {
-          id: s.fromUserId,
-          name: s.fromUserName,
-        },
-        to: {
-          id: s.toUserId,
-          name: s.toUserName,
-        },
-        amount: s.amount.toFixed(2),
-      })),
-    });
-  } catch (error) {
-    console.error('Get settlements error:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch settlements' },
-      { status: 500 }
+      settlements.map((s) => ({
+        fromId: s.fromUserId,
+        fromName: s.fromUserName,
+        toId: s.toUserId,
+        toName: s.toUserName,
+        amount: s.amount.toNumber(),
+      }))
     );
+  } catch (error) {
+    console.error("Get settlements error:", error);
+    return NextResponse.json({ error: "Failed to fetch settlements" }, { status: 500 });
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     const membership = await prisma.membership.findUnique({
       where: {
@@ -90,7 +77,7 @@ export async function POST(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Get suggested settlements
@@ -118,7 +105,7 @@ export async function POST(
             fromId: settlement.fromUserId,
             toId: settlement.toUserId,
             amount: settlement.amount,
-            note: 'Settlement transfer',
+            note: "Settlement transfer",
           },
         })
       )
@@ -135,14 +122,11 @@ export async function POST(
     );
 
     return NextResponse.json({
-      message: 'Settlements recorded successfully',
+      message: "Settlements recorded successfully",
       count: settlements.length,
     });
   } catch (error) {
-    console.error('Execute settlements error:', error);
-    return NextResponse.json(
-      { error: 'Failed to execute settlements' },
-      { status: 500 }
-    );
+    console.error("Execute settlements error:", error);
+    return NextResponse.json({ error: "Failed to execute settlements" }, { status: 500 });
   }
 }

@@ -28,10 +28,12 @@ export type AggregateExpense = {
 
 export type ExpenseAvgAggregateOutputType = {
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
 }
 
 export type ExpenseSumAggregateOutputType = {
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
 }
 
 export type ExpenseMinAggregateOutputType = {
@@ -39,6 +41,7 @@ export type ExpenseMinAggregateOutputType = {
   groupId: string | null
   title: string | null
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   currency: string | null
   payerId: string | null
   date: Date | null
@@ -52,6 +55,7 @@ export type ExpenseMaxAggregateOutputType = {
   groupId: string | null
   title: string | null
   totalAmount: runtime.Decimal | null
+  taxAmount: runtime.Decimal | null
   currency: string | null
   payerId: string | null
   date: Date | null
@@ -65,6 +69,7 @@ export type ExpenseCountAggregateOutputType = {
   groupId: number
   title: number
   totalAmount: number
+  taxAmount: number
   currency: number
   payerId: number
   date: number
@@ -77,10 +82,12 @@ export type ExpenseCountAggregateOutputType = {
 
 export type ExpenseAvgAggregateInputType = {
   totalAmount?: true
+  taxAmount?: true
 }
 
 export type ExpenseSumAggregateInputType = {
   totalAmount?: true
+  taxAmount?: true
 }
 
 export type ExpenseMinAggregateInputType = {
@@ -88,6 +95,7 @@ export type ExpenseMinAggregateInputType = {
   groupId?: true
   title?: true
   totalAmount?: true
+  taxAmount?: true
   currency?: true
   payerId?: true
   date?: true
@@ -101,6 +109,7 @@ export type ExpenseMaxAggregateInputType = {
   groupId?: true
   title?: true
   totalAmount?: true
+  taxAmount?: true
   currency?: true
   payerId?: true
   date?: true
@@ -114,6 +123,7 @@ export type ExpenseCountAggregateInputType = {
   groupId?: true
   title?: true
   totalAmount?: true
+  taxAmount?: true
   currency?: true
   payerId?: true
   date?: true
@@ -214,6 +224,7 @@ export type ExpenseGroupByOutputType = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal
+  taxAmount: runtime.Decimal | null
   currency: string
   payerId: string
   date: Date
@@ -250,6 +261,7 @@ export type ExpenseWhereInput = {
   groupId?: Prisma.StringFilter<"Expense"> | string
   title?: Prisma.StringFilter<"Expense"> | string
   totalAmount?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalNullableFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"Expense"> | string
   payerId?: Prisma.StringFilter<"Expense"> | string
   date?: Prisma.DateTimeFilter<"Expense"> | Date | string
@@ -267,6 +279,7 @@ export type ExpenseOrderByWithRelationInput = {
   groupId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   payerId?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -287,6 +300,7 @@ export type ExpenseWhereUniqueInput = Prisma.AtLeast<{
   groupId?: Prisma.StringFilter<"Expense"> | string
   title?: Prisma.StringFilter<"Expense"> | string
   totalAmount?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalNullableFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"Expense"> | string
   payerId?: Prisma.StringFilter<"Expense"> | string
   date?: Prisma.DateTimeFilter<"Expense"> | Date | string
@@ -304,6 +318,7 @@ export type ExpenseOrderByWithAggregationInput = {
   groupId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrderInput | Prisma.SortOrder
   currency?: Prisma.SortOrder
   payerId?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -325,6 +340,7 @@ export type ExpenseScalarWhereWithAggregatesInput = {
   groupId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   title?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   totalAmount?: Prisma.DecimalWithAggregatesFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalNullableWithAggregatesFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   payerId?: Prisma.StringWithAggregatesFilter<"Expense"> | string
   date?: Prisma.DateTimeWithAggregatesFilter<"Expense"> | Date | string
@@ -337,6 +353,7 @@ export type ExpenseCreateInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -353,6 +370,7 @@ export type ExpenseUncheckedCreateInput = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   payerId: string
   date?: Date | string
@@ -367,6 +385,7 @@ export type ExpenseUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -383,6 +402,7 @@ export type ExpenseUncheckedUpdateInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   payerId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -398,6 +418,7 @@ export type ExpenseCreateManyInput = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   payerId: string
   date?: Date | string
@@ -410,6 +431,7 @@ export type ExpenseUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -422,6 +444,7 @@ export type ExpenseUncheckedUpdateManyInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   payerId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -445,6 +468,7 @@ export type ExpenseCountOrderByAggregateInput = {
   groupId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   payerId?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -455,6 +479,7 @@ export type ExpenseCountOrderByAggregateInput = {
 
 export type ExpenseAvgOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
 }
 
 export type ExpenseMaxOrderByAggregateInput = {
@@ -462,6 +487,7 @@ export type ExpenseMaxOrderByAggregateInput = {
   groupId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   payerId?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -475,6 +501,7 @@ export type ExpenseMinOrderByAggregateInput = {
   groupId?: Prisma.SortOrder
   title?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
   currency?: Prisma.SortOrder
   payerId?: Prisma.SortOrder
   date?: Prisma.SortOrder
@@ -485,6 +512,7 @@ export type ExpenseMinOrderByAggregateInput = {
 
 export type ExpenseSumOrderByAggregateInput = {
   totalAmount?: Prisma.SortOrder
+  taxAmount?: Prisma.SortOrder
 }
 
 export type ExpenseScalarRelationFilter = {
@@ -576,6 +604,14 @@ export type ExpenseUncheckedUpdateManyWithoutGroupNestedInput = {
   deleteMany?: Prisma.ExpenseScalarWhereInput | Prisma.ExpenseScalarWhereInput[]
 }
 
+export type NullableDecimalFieldUpdateOperationsInput = {
+  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
+  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
+}
+
 export type ExpenseCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.ExpenseCreateWithoutItemsInput, Prisma.ExpenseUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.ExpenseCreateOrConnectWithoutItemsInput
@@ -608,6 +644,7 @@ export type ExpenseCreateWithoutPayerInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -623,6 +660,7 @@ export type ExpenseUncheckedCreateWithoutPayerInput = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -666,6 +704,7 @@ export type ExpenseScalarWhereInput = {
   groupId?: Prisma.StringFilter<"Expense"> | string
   title?: Prisma.StringFilter<"Expense"> | string
   totalAmount?: Prisma.DecimalFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.DecimalNullableFilter<"Expense"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFilter<"Expense"> | string
   payerId?: Prisma.StringFilter<"Expense"> | string
   date?: Prisma.DateTimeFilter<"Expense"> | Date | string
@@ -678,6 +717,7 @@ export type ExpenseCreateWithoutGroupInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -692,6 +732,7 @@ export type ExpenseUncheckedCreateWithoutGroupInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   payerId: string
   date?: Date | string
@@ -732,6 +773,7 @@ export type ExpenseCreateWithoutItemsInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -747,6 +789,7 @@ export type ExpenseUncheckedCreateWithoutItemsInput = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   payerId: string
   date?: Date | string
@@ -776,6 +819,7 @@ export type ExpenseUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -791,6 +835,7 @@ export type ExpenseUncheckedUpdateWithoutItemsInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   payerId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -804,6 +849,7 @@ export type ExpenseCreateWithoutSharesInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -819,6 +865,7 @@ export type ExpenseUncheckedCreateWithoutSharesInput = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   payerId: string
   date?: Date | string
@@ -848,6 +895,7 @@ export type ExpenseUpdateWithoutSharesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -863,6 +911,7 @@ export type ExpenseUncheckedUpdateWithoutSharesInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   payerId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -877,6 +926,7 @@ export type ExpenseCreateManyPayerInput = {
   groupId: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   date?: Date | string
   notes?: string | null
@@ -888,6 +938,7 @@ export type ExpenseUpdateWithoutPayerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -903,6 +954,7 @@ export type ExpenseUncheckedUpdateWithoutPayerInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -917,6 +969,7 @@ export type ExpenseUncheckedUpdateManyWithoutPayerInput = {
   groupId?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -928,6 +981,7 @@ export type ExpenseCreateManyGroupInput = {
   id?: string
   title: string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: string
   payerId: string
   date?: Date | string
@@ -940,6 +994,7 @@ export type ExpenseUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -954,6 +1009,7 @@ export type ExpenseUncheckedUpdateWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   payerId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -968,6 +1024,7 @@ export type ExpenseUncheckedUpdateManyWithoutGroupInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  taxAmount?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   currency?: Prisma.StringFieldUpdateOperationsInput | string
   payerId?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1021,6 +1078,7 @@ export type ExpenseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   groupId?: boolean
   title?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   currency?: boolean
   payerId?: boolean
   date?: boolean
@@ -1039,6 +1097,7 @@ export type ExpenseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   groupId?: boolean
   title?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   currency?: boolean
   payerId?: boolean
   date?: boolean
@@ -1054,6 +1113,7 @@ export type ExpenseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   groupId?: boolean
   title?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   currency?: boolean
   payerId?: boolean
   date?: boolean
@@ -1069,6 +1129,7 @@ export type ExpenseSelectScalar = {
   groupId?: boolean
   title?: boolean
   totalAmount?: boolean
+  taxAmount?: boolean
   currency?: boolean
   payerId?: boolean
   date?: boolean
@@ -1077,7 +1138,7 @@ export type ExpenseSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "title" | "totalAmount" | "currency" | "payerId" | "date" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
+export type ExpenseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "groupId" | "title" | "totalAmount" | "taxAmount" | "currency" | "payerId" | "date" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["expense"]>
 export type ExpenseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   payer?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1107,6 +1168,7 @@ export type $ExpensePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     groupId: string
     title: string
     totalAmount: runtime.Decimal
+    taxAmount: runtime.Decimal | null
     currency: string
     payerId: string
     date: Date
@@ -1544,6 +1606,7 @@ export interface ExpenseFieldRefs {
   readonly groupId: Prisma.FieldRef<"Expense", 'String'>
   readonly title: Prisma.FieldRef<"Expense", 'String'>
   readonly totalAmount: Prisma.FieldRef<"Expense", 'Decimal'>
+  readonly taxAmount: Prisma.FieldRef<"Expense", 'Decimal'>
   readonly currency: Prisma.FieldRef<"Expense", 'String'>
   readonly payerId: Prisma.FieldRef<"Expense", 'String'>
   readonly date: Prisma.FieldRef<"Expense", 'DateTime'>

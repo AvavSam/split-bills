@@ -3,17 +3,14 @@ import { getCurrentUser } from '@/lib/jwt';
 import { CreatePaymentSchema, parseAmount } from '@/lib/validation';
 import { prisma } from '@/lib/prisma';
 
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     const membership = await prisma.membership.findUnique({
       where: {
@@ -22,7 +19,7 @@ export async function GET(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const payments = await prisma.payment.findMany({
@@ -31,30 +28,24 @@ export async function GET(
         from: { select: { id: true, name: true, email: true } },
         to: { select: { id: true, name: true, email: true } },
       },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
     });
 
     return NextResponse.json(payments);
   } catch (error) {
-    console.error('Get payments error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch payments' },
-      { status: 500 }
-    );
+    console.error("Get payments error:", error);
+    return NextResponse.json({ error: "Failed to fetch payments" }, { status: 500 });
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await getCurrentUser();
     if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const groupId = params.id;
+    const { id: groupId } = await params;
 
     const membership = await prisma.membership.findUnique({
       where: {
@@ -63,7 +54,7 @@ export async function POST(
     });
 
     if (!membership) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
@@ -95,7 +86,7 @@ export async function POST(
         await tx.membership.update({
           where: { userId_groupId: { userId: validated.fromId, groupId } },
           data: {
-            netBalance: fromMembership.netBalance.minus(amount),
+            netBalance: fromMembership.netBalance.plus(amount),
           },
         });
       }
@@ -104,7 +95,7 @@ export async function POST(
         await tx.membership.update({
           where: { userId_groupId: { userId: validated.toId, groupId } },
           data: {
-            netBalance: toMembership.netBalance.plus(amount),
+            netBalance: toMembership.netBalance.minus(amount),
           },
         });
       }
@@ -114,10 +105,7 @@ export async function POST(
 
     return NextResponse.json(payment, { status: 201 });
   } catch (error) {
-    console.error('Create payment error:', error);
-    return NextResponse.json(
-      { error: 'Failed to create payment' },
-      { status: 500 }
-    );
+    console.error("Create payment error:", error);
+    return NextResponse.json({ error: "Failed to create payment" }, { status: 500 });
   }
 }

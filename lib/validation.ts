@@ -18,10 +18,14 @@ export const CreateGroupSchema = z.object({
 });
 
 export const CreateExpenseSchema = z.object({
-  title: z.string().min(1, 'Expense title is required'),
-  totalAmount: z.string().refine((val) => !isNaN(parseFloat(val)), 'Must be a valid number'),
-  currency: z.string().default('IDR'),
-  payerId: z.string().min(1, 'Payer is required'),
+  title: z.string().min(1, "Expense title is required"),
+  totalAmount: z.string().refine((val) => !isNaN(parseFloat(val)), "Must be a valid number"),
+  taxAmount: z
+    .string()
+    .refine((val) => !isNaN(parseFloat(val)), "Must be a valid number")
+    .optional(),
+  currency: z.string().default("IDR"),
+  payerId: z.string().min(1, "Payer is required"),
   date: z.string().datetime().optional(),
   notes: z.string().optional(),
   participants: z.array(
