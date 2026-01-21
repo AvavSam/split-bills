@@ -5,6 +5,7 @@ import AddExpenseModal from "./_components/AddExpenseModal";
 import SettlementView from "./_components/SettlementView";
 import GroupSettingsModal from "./_components/GroupSettingsModal";
 import InviteMemberModal from "./_components/InviteMemberModal";
+import ActivityList from "./_components/ActivityList";
 
 import Link from "next/link";
 
@@ -72,6 +73,7 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
   }));
 
   // Combine expenses and payments for the activity log
+  // Using Date objects but they will be serialized when passed to client component
   const activities = [
     ...group.expenses.map((e) => ({
       type: "EXPENSE" as const,
@@ -98,7 +100,7 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
       payerName: p.from.name,
       payerId: p.fromId,
       receiverName: p.to.name,
-      shares: [], // Uniform interface
+      shares: [] as { userName: string | null; userId: string; amount: number }[],
     })),
   ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -147,49 +149,13 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
           {/* Recent Expenses List */}
           <section>
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Recent Activity</h2>
-            <div className="space-y-3">
-              {activities.length === 0 ? (
-                <p className="text-gray-500 italic">No activity recorded yet.</p>
-              ) : (
-                activities.map((activity) => (
-                  <div key={activity.id} className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                    <div className="flex justify-between items-center p-4">
-                      <div className="flex gap-4 items-center">
-                        <div
-                          className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                            activity.type === "EXPENSE" ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400" : "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400"
-                          }`}
-                        >
-                          {activity.type === "EXPENSE" ? activity.title.charAt(0).toUpperCase() : "$"}
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-900 dark:text-white">{activity.type === "EXPENSE" ? activity.title : `Paid to ${activity.receiverName}`}</p>
-                          <p className="text-xs text-gray-500">
-                            {activity.payerId === user.userId ? "You" : activity.payerName} {activity.type === "EXPENSE" ? "paid" : "sent"} {activity.date.toLocaleDateString()}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className={`font-bold ${activity.type === "PAYMENT" ? "text-emerald-600 dark:text-emerald-400" : "text-gray-900 dark:text-white"}`}>
-                          {new Intl.NumberFormat("id-ID", { style: "currency", currency: activity.currency }).format(activity.amount)}
-                        </p>
-                      </div>
-                    </div>
-                    {activity.type === "EXPENSE" && activity.shares && activity.shares.length > 0 && (
-                      <div className="px-16 pb-4 pt-0">
-                        <div className="text-xs text-gray-500 bg-zinc-50 dark:bg-zinc-800/50 p-2 rounded-lg">
-                          {activity.shares.map((share) => (
-                            <span key={share.userId} className="mr-3 inline-block">
-                              {share.userId === user.userId ? "You" : share.userName} owes {new Intl.NumberFormat("id-ID", { style: "currency", currency: activity.currency }).format(share.amount)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+            <ActivityList
+              activities={activities}
+              members={plainMembers}
+              currentUserId={user.userId}
+              groupId={groupId}
+              currency={group.currency}
+            />
           </section>
 
           {/* Settlements */}

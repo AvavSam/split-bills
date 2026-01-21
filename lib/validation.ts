@@ -52,6 +52,31 @@ export const CreatePaymentSchema = z.object({
   note: z.string().optional(),
 });
 
+export const UpdateExpenseSchema = z.object({
+  title: z.string().min(1, "Expense title is required").optional(),
+  totalAmount: z
+    .string()
+    .refine((val) => !isNaN(parseFloat(val)), "Must be a valid number")
+    .optional(),
+  taxAmount: z
+    .string()
+    .refine((val) => !isNaN(parseFloat(val)), "Must be a valid number")
+    .optional()
+    .nullable(),
+  currency: z.string().optional(),
+  payerId: z.string().min(1, "Payer is required").optional(),
+  date: z.string().datetime().optional(),
+  notes: z.string().optional().nullable(),
+  participants: z
+    .array(
+      z.object({
+        userId: z.string(),
+        shareAmount: z.string(),
+      })
+    )
+    .optional(),
+});
+
 // Utility to parse and round Decimal amounts
 export function parseAmount(value: string | number): Decimal {
   const decimal = new Decimal(value);
@@ -68,6 +93,7 @@ type LoginInput = z.infer<typeof LoginSchema>;
 type CreateGroupInput = z.infer<typeof CreateGroupSchema>;
 type CreateExpenseInput = z.infer<typeof CreateExpenseSchema>;
 type CreatePaymentInput = z.infer<typeof CreatePaymentSchema>;
+type UpdateExpenseInput = z.infer<typeof UpdateExpenseSchema>;
 
 export type {
   RegisterInput,
@@ -75,4 +101,5 @@ export type {
   CreateGroupInput,
   CreateExpenseInput,
   CreatePaymentInput,
+  UpdateExpenseInput,
 };
