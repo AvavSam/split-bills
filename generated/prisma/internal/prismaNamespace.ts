@@ -1197,7 +1197,8 @@ export const ExpenseShareScalarFieldEnum = {
   id: 'id',
   expenseId: 'expenseId',
   userId: 'userId',
-  shareAmount: 'shareAmount'
+  shareAmount: 'shareAmount',
+  paidAt: 'paidAt'
 } as const
 
 export type ExpenseShareScalarFieldEnum = (typeof ExpenseShareScalarFieldEnum)[keyof typeof ExpenseShareScalarFieldEnum]

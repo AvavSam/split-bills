@@ -12,6 +12,7 @@ interface PayShareModalProps {
   shareUserName: string | null;
   amount: number;
   expenseTitle: string;
+  expenseId: string;
   currentUserId: string;
   onClose: () => void;
 }
@@ -25,6 +26,7 @@ export default function PayShareModal({
   shareUserName,
   amount,
   expenseTitle,
+  expenseId,
   currentUserId,
   onClose,
 }: PayShareModalProps) {
@@ -61,6 +63,8 @@ export default function PayShareModal({
           toId,
           amount: parsedAmount.toFixed(2),
           note: `Payment for: ${expenseTitle}`,
+          expenseId,
+          shareUserId,
         }),
       });
 

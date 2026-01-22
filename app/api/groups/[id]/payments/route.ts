@@ -62,6 +62,54 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const amount = parseAmount(validated.amount);
 
+    // Check for duplicate payment within 10 seconds (protection against double-click)
+    const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+    const recentDuplicatePayment = await prisma.payment.findFirst({
+      where: {
+        groupId,
+        fromId: validated.fromId,
+        toId: validated.toId,
+        amount: amount,
+        createdAt: {
+          gte: tenSecondsAgo,
+        },
+      },
+    });
+
+    if (recentDuplicatePayment) {
+      return NextResponse.json(
+        { error: "Payment baru saja dicatat. Mohon tunggu beberapa detik." },
+        { status: 409 }
+      );
+    }
+
+    // Jika payment terkait dengan expense share tertentu, cek apakah sudah dibayar
+    let existingShare = null;
+    if (validated.expenseId && validated.shareUserId) {
+      existingShare = await prisma.expenseShare.findUnique({
+        where: {
+          expenseId_userId: {
+            expenseId: validated.expenseId,
+            userId: validated.shareUserId,
+          },
+        },
+      });
+
+      if (!existingShare) {
+        return NextResponse.json(
+          { error: "Expense share tidak ditemukan" },
+          { status: 404 }
+        );
+      }
+
+      if (existingShare.paidAt) {
+        return NextResponse.json(
+          { error: "Share ini sudah dibayar sebelumnya" },
+          { status: 400 }
+        );
+      }
+    }
+
     const payment = await prisma.$transaction(async (tx) => {
       const newPayment = await tx.payment.create({
         data: {
@@ -100,12 +148,34 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         });
       }
 
+      // Update paidAt pada ExpenseShare jika payment terkait dengan expense
+      if (validated.expenseId && validated.shareUserId) {
+        await tx.expenseShare.update({
+          where: {
+            expenseId_userId: {
+              expenseId: validated.expenseId,
+              userId: validated.shareUserId,
+            },
+          },
+          data: {
+            paidAt: new Date(),
+          },
+        });
+      }
+
       return newPayment;
     });
 
     return NextResponse.json(payment, { status: 201 });
   } catch (error) {
     console.error("Create payment error:", error);
-    return NextResponse.json({ error: "Failed to create payment" }, { status: 500 });
+    // Jika Prisma error, coba extract pesan yang lebih jelas
+    if (error && typeof error === 'object' && 'code' in error) {
+      const prismaError = error as { code: string; message: string };
+      console.error("Prisma error code:", prismaError.code);
+      return NextResponse.json({ error: `Database error: ${prismaError.code}` }, { status: 500 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to create payment";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

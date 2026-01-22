@@ -9,6 +9,7 @@ interface Share {
   userName: string | null;
   userId: string;
   amount: number;
+  paidAt: string | null;
 }
 
 interface Activity {
@@ -38,17 +39,12 @@ interface ActivityListProps {
   activities: Activity[];
   members: Member[];
   currentUserId: string;
+  memberBalances: Record<string, number>;
   groupId: string;
   currency: string;
 }
 
-export default function ActivityList({
-  activities,
-  members,
-  currentUserId,
-  groupId,
-  currency,
-}: ActivityListProps) {
+export default function ActivityList({ activities, members, currentUserId, memberBalances, groupId, currency }: ActivityListProps) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingExpense, setEditingExpense] = useState<Activity | null>(null);
@@ -86,10 +82,7 @@ export default function ActivityList({
     }
   };
 
-  const handlePayShare = (
-    activity: Activity,
-    share: Share
-  ) => {
+  const handlePayShare = (activity: Activity, share: Share) => {
     setPayingShare({
       expenseId: activity.id,
       expenseTitle: activity.title,
@@ -101,8 +94,7 @@ export default function ActivityList({
     });
   };
 
-  const formatCurrency = (amount: number) =>
-    new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(amount);
+  const formatCurrency = (amount: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency }).format(amount);
 
   return (
     <>
@@ -111,88 +103,40 @@ export default function ActivityList({
           <p className="text-gray-500 italic">Belum ada aktivitas tercatat.</p>
         ) : (
           activities.map((activity) => (
-            <div
-              key={activity.id}
-              className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800"
-            >
+            <div key={activity.id} className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-100 dark:border-zinc-800">
               <div className="flex justify-between items-center p-4">
                 <div className="flex gap-4 items-center">
                   <div
                     className={`h-10 w-10 rounded-full flex items-center justify-center font-bold text-sm ${
-                      activity.type === "EXPENSE"
-                        ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400"
-                        : "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400"
+                      activity.type === "EXPENSE" ? "bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400" : "bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400"
                     }`}
                   >
                     {activity.type === "EXPENSE" ? activity.title.charAt(0).toUpperCase() : "$"}
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">
-                      {activity.type === "EXPENSE" ? activity.title : `Paid to ${activity.receiverName}`}
-                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">{activity.type === "EXPENSE" ? activity.title : `Paid to ${activity.receiverName}`}</p>
                     <p className="text-xs text-gray-500">
-                      {activity.payerId === currentUserId ? "You" : activity.payerName}{" "}
-                      {activity.type === "EXPENSE" ? "paid" : "sent"}{" "}
-                      {new Date(activity.date).toLocaleDateString()}
+                      {activity.payerId === currentUserId ? "You" : activity.payerName} {activity.type === "EXPENSE" ? "paid" : "sent"} {new Date(activity.date).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-right">
-                    <p
-                      className={`font-bold ${
-                        activity.type === "PAYMENT"
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-gray-900 dark:text-white"
-                      }`}
-                    >
-                      {formatCurrency(activity.amount)}
-                    </p>
+                    <p className={`font-bold ${activity.type === "PAYMENT" ? "text-emerald-600 dark:text-emerald-400" : "text-gray-900 dark:text-white"}`}>{formatCurrency(activity.amount)}</p>
                   </div>
 
                   {/* Action Menu for Expenses */}
                   {activity.type === "EXPENSE" && (
                     <div className="relative">
-                      <button
-                        onClick={() => setOpenMenuId(openMenuId === activity.id ? null : activity.id)}
-                        className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
-                        disabled={deletingId === activity.id}
-                      >
+                      <button onClick={() => setOpenMenuId(openMenuId === activity.id ? null : activity.id)} className="p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors" disabled={deletingId === activity.id}>
                         {deletingId === activity.id ? (
-                          <svg
-                            className="animate-spin h-5 w-5 text-gray-500"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
+                          <svg className="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
                         ) : (
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="w-5 h-5 text-gray-500"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z"
-                            />
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
                           </svg>
                         )}
                       </button>
@@ -200,10 +144,7 @@ export default function ActivityList({
                       {openMenuId === activity.id && (
                         <>
                           {/* Backdrop to close menu */}
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setOpenMenuId(null)}
-                          />
+                          <div className="fixed inset-0 z-10" onClick={() => setOpenMenuId(null)} />
                           <div className="absolute right-0 top-full mt-1 z-20 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg py-1 min-w-[120px]">
                             <button
                               onClick={() => {
@@ -212,14 +153,7 @@ export default function ActivityList({
                               }}
                               className="w-full px-4 py-2 text-left text-sm hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center gap-2"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-4 h-4"
-                              >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -235,14 +169,7 @@ export default function ActivityList({
                               }}
                               className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-zinc-100 dark:hover:bg-zinc-700 flex items-center gap-2"
                             >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth={1.5}
-                                stroke="currentColor"
-                                className="w-4 h-4"
-                              >
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -265,30 +192,41 @@ export default function ActivityList({
                   <div className="text-xs text-gray-500 bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg space-y-2">
                     {activity.shares.map((share) => {
                       // Show Pay button if:
-                      // 1. Current user is the share owner (can pay their own portion)
-                      // 2. Current user is the payer (can confirm someone paid them)
-                      // Don't show Pay for payer's own share (they don't owe themselves)
+                      // 1. Share is not already paid
+                      // 2. Share owner is not the expense payer (can't owe yourself)
+                      // 3. Current user is authorized (share owner or expense payer)
+                      // 4. CRITICAL: Share owner must be a DEBTOR (balance < 0) - they actually owe money
+                      const isPaid = !!share.paidAt;
+                      const isShareOwner = share.userId === currentUserId;
+                      const isExpensePayer = activity.payerId === currentUserId;
+
+                      // Check if the share owner is a debtor (owes money)
+                      // Only show Pay button if the share owner has negative balance
+                      const shareOwnerBalance = memberBalances[share.userId] ?? 0;
+                      const isShareOwnerDebtor = shareOwnerBalance < 0;
+
                       const canPay =
+                        !isPaid &&
                         share.userId !== activity.payerId &&
-                        (share.userId === currentUserId || activity.payerId === currentUserId);
+                        (isShareOwner || isExpensePayer) &&
+                        // CRITICAL: Only allow payment if share owner is a debtor
+                        isShareOwnerDebtor;
 
                       return (
-                        <div
-                          key={share.userId}
-                          className="flex items-center justify-between"
-                        >
+                        <div key={share.userId} className="flex items-center justify-between">
                           <span>
-                            {share.userId === currentUserId ? "You" : share.userName} owes{" "}
-                            {formatCurrency(share.amount)}
+                            {share.userId === currentUserId ? "You" : share.userName} {isPaid ? "paid" : "owes"} {formatCurrency(share.amount)}
                           </span>
-                          {canPay && (
+                          {isPaid ? (
+                            <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded">Paid</span>
+                          ) : canPay ? (
                             <button
                               onClick={() => handlePayShare(activity, share)}
                               className="px-2 py-1 text-xs bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 rounded hover:bg-emerald-200 dark:hover:bg-emerald-800/50 transition-colors"
                             >
                               Pay
                             </button>
-                          )}
+                          ) : null}
                         </div>
                       );
                     })}
@@ -301,16 +239,7 @@ export default function ActivityList({
       </div>
 
       {/* Edit Expense Modal */}
-      {editingExpense && (
-        <EditExpenseModal
-          groupId={groupId}
-          currency={currency}
-          members={members}
-          currentUserId={currentUserId}
-          expense={editingExpense}
-          onClose={() => setEditingExpense(null)}
-        />
-      )}
+      {editingExpense && <EditExpenseModal groupId={groupId} currency={currency} members={members} currentUserId={currentUserId} expense={editingExpense} onClose={() => setEditingExpense(null)} />}
 
       {/* Pay Share Modal */}
       {payingShare && (
@@ -323,6 +252,7 @@ export default function ActivityList({
           shareUserName={payingShare.shareUserName}
           amount={payingShare.amount}
           expenseTitle={payingShare.expenseTitle}
+          expenseId={payingShare.expenseId}
           currentUserId={currentUserId}
           onClose={() => setPayingShare(null)}
         />

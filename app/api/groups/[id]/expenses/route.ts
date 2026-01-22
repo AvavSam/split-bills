@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/jwt';
 import { CreateExpenseSchema, parseAmount } from '@/lib/validation';
 import { prisma } from '@/lib/prisma';
+import { recalculateUserBalance } from '@/lib/balance';
 import Decimal from 'decimal.js';
 
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -113,38 +114,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       });
 
       // Update netBalance for payer and all participants
-      const allUserIds = [validated.payerId, ...validated.participants.map((p) => p.userId)];
+      // Use the correct recalculateUserBalance function that includes payments
+      const affectedUserIds = new Set<string>();
+      affectedUserIds.add(validated.payerId);
+      validated.participants.forEach((p) => affectedUserIds.add(p.userId));
 
-      for (const userId of allUserIds) {
-        const currentMembership = await tx.membership.findUnique({
-          where: { userId_groupId: { userId, groupId } },
-        });
-
-        if (currentMembership) {
-          // Recompute balance from scratch (simplified)
-          const userExpenses = await tx.expense.findMany({
-            where: { groupId, payerId: userId },
-          });
-
-          const userShares = await tx.expenseShare.findMany({
-            where: {
-              userId,
-              expense: { groupId },
-            },
-            include: { expense: true },
-          });
-
-          const paid = userExpenses.reduce((sum, exp) => sum.plus(new Decimal(exp.totalAmount.toString())), new Decimal(0));
-
-          const owed = userShares.reduce((sum, share) => sum.plus(new Decimal(share.shareAmount.toString())), new Decimal(0));
-
-          const netBalance = paid.minus(owed);
-
-          await tx.membership.update({
-            where: { userId_groupId: { userId, groupId } },
-            data: { netBalance },
-          });
-        }
+      for (const userId of affectedUserIds) {
+        await recalculateUserBalance(tx, userId, groupId);
       }
 
       return newExpense;

@@ -107,12 +107,13 @@ model ExpenseItem {
 }
 
 model ExpenseShare {
-  id          String  @id @default(cuid())
-  expense     Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid())
+  expense     Expense   @relation(fields: [expenseId], references: [id], onDelete: Cascade)
   expenseId   String
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
-  shareAmount Decimal @db.Decimal(12, 2)
+  shareAmount Decimal   @db.Decimal(12, 2)
+  paidAt      DateTime? // null = belum bayar, ada value = sudah bayar
 
   @@unique([expenseId, userId])
   @@index([expenseId])

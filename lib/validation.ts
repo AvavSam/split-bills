@@ -50,6 +50,9 @@ export const CreatePaymentSchema = z.object({
   toId: z.string(),
   amount: z.string().refine((val) => !isNaN(parseFloat(val)), 'Must be a valid number'),
   note: z.string().optional(),
+  // Optional: untuk melacak payment dari expense share tertentu
+  expenseId: z.string().optional(),
+  shareUserId: z.string().optional(),
 });
 
 export const UpdateExpenseSchema = z.object({

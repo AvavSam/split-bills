@@ -2,66 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/jwt';
 import { UpdateExpenseSchema, parseAmount } from '@/lib/validation';
 import { prisma } from '@/lib/prisma';
+import { recalculateUserBalance } from '@/lib/balance';
 import Decimal from 'decimal.js';
 
 type RouteParams = { params: Promise<{ id: string; expenseId: string }> };
-
-// Helper to recalculate netBalance for a user in a group
-async function recalculateUserBalance(
-  tx: Parameters<Parameters<typeof prisma.$transaction>[0]>[0],
-  userId: string,
-  groupId: string
-) {
-  // Get all payments involving this user
-  const paymentsFrom = await tx.payment.findMany({
-    where: { groupId, fromId: userId },
-  });
-  const paymentsTo = await tx.payment.findMany({
-    where: { groupId, toId: userId },
-  });
-
-  // Get all expenses paid by this user
-  const userExpenses = await tx.expense.findMany({
-    where: { groupId, payerId: userId },
-  });
-
-  // Get all expense shares for this user
-  const userShares = await tx.expenseShare.findMany({
-    where: {
-      userId,
-      expense: { groupId },
-    },
-  });
-
-  // Calculate: paid (expenses) - owed (shares) + payments sent - payments received
-  const expensesPaid = userExpenses.reduce(
-    (sum, exp) => sum.plus(new Decimal(exp.totalAmount.toString())),
-    new Decimal(0)
-  );
-
-  const sharesOwed = userShares.reduce(
-    (sum, share) => sum.plus(new Decimal(share.shareAmount.toString())),
-    new Decimal(0)
-  );
-
-  const paymentsSent = paymentsFrom.reduce(
-    (sum, p) => sum.plus(new Decimal(p.amount.toString())),
-    new Decimal(0)
-  );
-
-  const paymentsReceived = paymentsTo.reduce(
-    (sum, p) => sum.plus(new Decimal(p.amount.toString())),
-    new Decimal(0)
-  );
-
-  // Net balance = what you paid for others - what you owe + payments you sent - payments you received
-  const netBalance = expensesPaid.minus(sharesOwed).plus(paymentsSent).minus(paymentsReceived);
-
-  await tx.membership.update({
-    where: { userId_groupId: { userId, groupId } },
-    data: { netBalance },
-  });
-}
 
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {

@@ -39,6 +39,7 @@ export type ExpenseShareMinAggregateOutputType = {
   expenseId: string | null
   userId: string | null
   shareAmount: runtime.Decimal | null
+  paidAt: Date | null
 }
 
 export type ExpenseShareMaxAggregateOutputType = {
@@ -46,6 +47,7 @@ export type ExpenseShareMaxAggregateOutputType = {
   expenseId: string | null
   userId: string | null
   shareAmount: runtime.Decimal | null
+  paidAt: Date | null
 }
 
 export type ExpenseShareCountAggregateOutputType = {
@@ -53,6 +55,7 @@ export type ExpenseShareCountAggregateOutputType = {
   expenseId: number
   userId: number
   shareAmount: number
+  paidAt: number
   _all: number
 }
 
@@ -70,6 +73,7 @@ export type ExpenseShareMinAggregateInputType = {
   expenseId?: true
   userId?: true
   shareAmount?: true
+  paidAt?: true
 }
 
 export type ExpenseShareMaxAggregateInputType = {
@@ -77,6 +81,7 @@ export type ExpenseShareMaxAggregateInputType = {
   expenseId?: true
   userId?: true
   shareAmount?: true
+  paidAt?: true
 }
 
 export type ExpenseShareCountAggregateInputType = {
@@ -84,6 +89,7 @@ export type ExpenseShareCountAggregateInputType = {
   expenseId?: true
   userId?: true
   shareAmount?: true
+  paidAt?: true
   _all?: true
 }
 
@@ -178,6 +184,7 @@ export type ExpenseShareGroupByOutputType = {
   expenseId: string
   userId: string
   shareAmount: runtime.Decimal
+  paidAt: Date | null
   _count: ExpenseShareCountAggregateOutputType | null
   _avg: ExpenseShareAvgAggregateOutputType | null
   _sum: ExpenseShareSumAggregateOutputType | null
@@ -208,6 +215,7 @@ export type ExpenseShareWhereInput = {
   expenseId?: Prisma.StringFilter<"ExpenseShare"> | string
   userId?: Prisma.StringFilter<"ExpenseShare"> | string
   shareAmount?: Prisma.DecimalFilter<"ExpenseShare"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.DateTimeNullableFilter<"ExpenseShare"> | Date | string | null
   expense?: Prisma.XOR<Prisma.ExpenseScalarRelationFilter, Prisma.ExpenseWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -217,6 +225,7 @@ export type ExpenseShareOrderByWithRelationInput = {
   expenseId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   shareAmount?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   expense?: Prisma.ExpenseOrderByWithRelationInput
   user?: Prisma.UserOrderByWithRelationInput
 }
@@ -230,6 +239,7 @@ export type ExpenseShareWhereUniqueInput = Prisma.AtLeast<{
   expenseId?: Prisma.StringFilter<"ExpenseShare"> | string
   userId?: Prisma.StringFilter<"ExpenseShare"> | string
   shareAmount?: Prisma.DecimalFilter<"ExpenseShare"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.DateTimeNullableFilter<"ExpenseShare"> | Date | string | null
   expense?: Prisma.XOR<Prisma.ExpenseScalarRelationFilter, Prisma.ExpenseWhereInput>
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id" | "expenseId_userId">
@@ -239,6 +249,7 @@ export type ExpenseShareOrderByWithAggregationInput = {
   expenseId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   shareAmount?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ExpenseShareCountOrderByAggregateInput
   _avg?: Prisma.ExpenseShareAvgOrderByAggregateInput
   _max?: Prisma.ExpenseShareMaxOrderByAggregateInput
@@ -254,11 +265,13 @@ export type ExpenseShareScalarWhereWithAggregatesInput = {
   expenseId?: Prisma.StringWithAggregatesFilter<"ExpenseShare"> | string
   userId?: Prisma.StringWithAggregatesFilter<"ExpenseShare"> | string
   shareAmount?: Prisma.DecimalWithAggregatesFilter<"ExpenseShare"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ExpenseShare"> | Date | string | null
 }
 
 export type ExpenseShareCreateInput = {
   id?: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
   expense: Prisma.ExpenseCreateNestedOneWithoutSharesInput
   user: Prisma.UserCreateNestedOneWithoutExpenseSharesInput
 }
@@ -268,11 +281,13 @@ export type ExpenseShareUncheckedCreateInput = {
   expenseId: string
   userId: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
 }
 
 export type ExpenseShareUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expense?: Prisma.ExpenseUpdateOneRequiredWithoutSharesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutExpenseSharesNestedInput
 }
@@ -282,6 +297,7 @@ export type ExpenseShareUncheckedUpdateInput = {
   expenseId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseShareCreateManyInput = {
@@ -289,11 +305,13 @@ export type ExpenseShareCreateManyInput = {
   expenseId: string
   userId: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
 }
 
 export type ExpenseShareUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseShareUncheckedUpdateManyInput = {
@@ -301,6 +319,7 @@ export type ExpenseShareUncheckedUpdateManyInput = {
   expenseId?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseShareListRelationFilter = {
@@ -323,6 +342,7 @@ export type ExpenseShareCountOrderByAggregateInput = {
   expenseId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   shareAmount?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type ExpenseShareAvgOrderByAggregateInput = {
@@ -334,6 +354,7 @@ export type ExpenseShareMaxOrderByAggregateInput = {
   expenseId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   shareAmount?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type ExpenseShareMinOrderByAggregateInput = {
@@ -341,6 +362,7 @@ export type ExpenseShareMinOrderByAggregateInput = {
   expenseId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   shareAmount?: Prisma.SortOrder
+  paidAt?: Prisma.SortOrder
 }
 
 export type ExpenseShareSumOrderByAggregateInput = {
@@ -431,9 +453,14 @@ export type ExpenseShareUncheckedUpdateManyWithoutExpenseNestedInput = {
   deleteMany?: Prisma.ExpenseShareScalarWhereInput | Prisma.ExpenseShareScalarWhereInput[]
 }
 
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
+}
+
 export type ExpenseShareCreateWithoutUserInput = {
   id?: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
   expense: Prisma.ExpenseCreateNestedOneWithoutSharesInput
 }
 
@@ -441,6 +468,7 @@ export type ExpenseShareUncheckedCreateWithoutUserInput = {
   id?: string
   expenseId: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
 }
 
 export type ExpenseShareCreateOrConnectWithoutUserInput = {
@@ -477,11 +505,13 @@ export type ExpenseShareScalarWhereInput = {
   expenseId?: Prisma.StringFilter<"ExpenseShare"> | string
   userId?: Prisma.StringFilter<"ExpenseShare"> | string
   shareAmount?: Prisma.DecimalFilter<"ExpenseShare"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.DateTimeNullableFilter<"ExpenseShare"> | Date | string | null
 }
 
 export type ExpenseShareCreateWithoutExpenseInput = {
   id?: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutExpenseSharesInput
 }
 
@@ -489,6 +519,7 @@ export type ExpenseShareUncheckedCreateWithoutExpenseInput = {
   id?: string
   userId: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
 }
 
 export type ExpenseShareCreateOrConnectWithoutExpenseInput = {
@@ -521,11 +552,13 @@ export type ExpenseShareCreateManyUserInput = {
   id?: string
   expenseId: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
 }
 
 export type ExpenseShareUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   expense?: Prisma.ExpenseUpdateOneRequiredWithoutSharesNestedInput
 }
 
@@ -533,23 +566,27 @@ export type ExpenseShareUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   expenseId?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseShareUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   expenseId?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseShareCreateManyExpenseInput = {
   id?: string
   userId: string
   shareAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Date | string | null
 }
 
 export type ExpenseShareUpdateWithoutExpenseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutExpenseSharesNestedInput
 }
 
@@ -557,12 +594,14 @@ export type ExpenseShareUncheckedUpdateWithoutExpenseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ExpenseShareUncheckedUpdateManyWithoutExpenseInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   shareAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -572,6 +611,7 @@ export type ExpenseShareSelect<ExtArgs extends runtime.Types.Extensions.Internal
   expenseId?: boolean
   userId?: boolean
   shareAmount?: boolean
+  paidAt?: boolean
   expense?: boolean | Prisma.ExpenseDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["expenseShare"]>
@@ -581,6 +621,7 @@ export type ExpenseShareSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   expenseId?: boolean
   userId?: boolean
   shareAmount?: boolean
+  paidAt?: boolean
   expense?: boolean | Prisma.ExpenseDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["expenseShare"]>
@@ -590,6 +631,7 @@ export type ExpenseShareSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   expenseId?: boolean
   userId?: boolean
   shareAmount?: boolean
+  paidAt?: boolean
   expense?: boolean | Prisma.ExpenseDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["expenseShare"]>
@@ -599,9 +641,10 @@ export type ExpenseShareSelectScalar = {
   expenseId?: boolean
   userId?: boolean
   shareAmount?: boolean
+  paidAt?: boolean
 }
 
-export type ExpenseShareOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "expenseId" | "userId" | "shareAmount", ExtArgs["result"]["expenseShare"]>
+export type ExpenseShareOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "expenseId" | "userId" | "shareAmount" | "paidAt", ExtArgs["result"]["expenseShare"]>
 export type ExpenseShareInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   expense?: boolean | Prisma.ExpenseDefaultArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -626,6 +669,7 @@ export type $ExpenseSharePayload<ExtArgs extends runtime.Types.Extensions.Intern
     expenseId: string
     userId: string
     shareAmount: runtime.Decimal
+    paidAt: Date | null
   }, ExtArgs["result"]["expenseShare"]>
   composites: {}
 }
@@ -1055,6 +1099,7 @@ export interface ExpenseShareFieldRefs {
   readonly expenseId: Prisma.FieldRef<"ExpenseShare", 'String'>
   readonly userId: Prisma.FieldRef<"ExpenseShare", 'String'>
   readonly shareAmount: Prisma.FieldRef<"ExpenseShare", 'Decimal'>
+  readonly paidAt: Prisma.FieldRef<"ExpenseShare", 'DateTime'>
 }
     
 

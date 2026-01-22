@@ -72,6 +72,12 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
     },
   }));
 
+  // Create a map of member balances for ActivityList to check who is debtor
+  const memberBalances: Record<string, number> = {};
+  group.memberships.forEach((m) => {
+    memberBalances[m.userId] = Number(m.netBalance);
+  });
+
   // Combine expenses and payments for the activity log
   // Using Date objects but they will be serialized when passed to client component
   const activities = [
@@ -88,6 +94,7 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
         userName: s.user.name,
         userId: s.user.id,
         amount: Number(s.shareAmount),
+        paidAt: s.paidAt ? s.paidAt.toISOString() : null,
       })),
     })),
     ...group.payments.map((p) => ({
@@ -100,7 +107,7 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
       payerName: p.from.name,
       payerId: p.fromId,
       receiverName: p.to.name,
-      shares: [] as { userName: string | null; userId: string; amount: number }[],
+      shares: [] as { userName: string | null; userId: string; amount: number; paidAt: string | null }[],
     })),
   ].sort((a, b) => b.date.getTime() - a.date.getTime());
 
@@ -149,13 +156,7 @@ export default async function GroupDashboard({ params }: { params: Promise<{ id:
           {/* Recent Expenses List */}
           <section>
             <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Recent Activity</h2>
-            <ActivityList
-              activities={activities}
-              members={plainMembers}
-              currentUserId={user.userId}
-              groupId={groupId}
-              currency={group.currency}
-            />
+            <ActivityList activities={activities} members={plainMembers} currentUserId={user.userId} memberBalances={memberBalances} groupId={groupId} currency={group.currency} />
           </section>
 
           {/* Settlements */}
